@@ -1,0 +1,36 @@
+<!doctype html>
+
+<meta charset="utf-8">
+<link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
+
+<div id="mocha"></div>
+
+<script src="https://unpkg.com/chai@4.2.0/chai.js"></script>
+<script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
+<script type="module">
+  mocha.setup('bdd')
+  window.expect = chai.expect
+
+  const it = window.it
+
+  window.it = function (name, fn) {
+    function wrappedFn() {
+      try {
+        return fn()
+      } catch (e) {
+        console.error(name + ' failed!\n\n', e)
+        throw e
+      }
+    }
+    return it.call(this, name, wrappedFn)
+  }
+</script>
+
+<script type="module" src="./test/Atom.mjs"></script>
+<script type="module" src="./test/Manager.mjs"></script>
+<script type="module" src="./test/ObservableArray.mjs"></script>
+
+<script type="module">
+  mocha.checkLeaks()
+  mocha.run()
+</script>

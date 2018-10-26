@@ -1,0 +1,12 @@
+{
+  "name": "bind",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Adrian Helvik <adrian.helvik@specifique.no>",
+  "license": "MIT",
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  }
+}
