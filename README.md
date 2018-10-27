@@ -1,7 +1,9 @@
 # @adrianhelvik/bind
 
 This is an ES6 only observable library. It is havily inspired
-by mobx, but has a few key differences.
+by Mobx, but has a few key differences. Its api does not use
+decorators and just like the latest version of Mobx, it uses
+non-polyfillable Proxies.
 
 ## Usage example
 
