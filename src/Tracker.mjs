@@ -1,14 +1,14 @@
 class Tracker {
   constructor(manager) {
     this.manager = manager
-    this.accessed = []
-    this.updated = []
+    this.accessed = new Set()
+    this.updated = new Set()
   }
 
   track(fn) {
     this.tracking = true
-    this.accessed = []
-    this.updated = []
+    this.accessed = new Set()
+    this.updated = new Set()
     try {
       fn()
     } catch (e) {

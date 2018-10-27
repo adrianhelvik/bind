@@ -1,15 +1,36 @@
+import {manager} from './state.mjs'
+
 class Atom {
-  constructor(manager, name) {
-    this.manager = manager
+  constructor(name) {
+    this.updateHandlers = new Set()
     this.name = name
   }
 
   updated() {
-    this.manager.addUpdated(this)
+    manager.addUpdated(this)
   }
 
   accessed() {
-    this.manager.addAccessed(this)
+    manager.addAccessed(this)
+  }
+
+  onUpdate(fn) {
+    this.updateHandlers.add(fn)
+    return () => {
+      this.updateHandlers.remove(fn)
+    }
+  }
+
+  callUpdateHandlers() {
+    for (let handler of this.updateHandlers) {
+      try {
+        handler()
+      } catch (e) {
+        var error = error || e
+      }
+    }
+    if (error)
+      throw error
   }
 }
 

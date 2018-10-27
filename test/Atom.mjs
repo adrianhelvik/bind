@@ -1,33 +1,26 @@
-import Manager from '../src/Manager.mjs'
+import track from '../src/track.mjs'
 import Atom from '../src/Atom.mjs'
 
 describe('Atom', () => {
-  let manager
   let atom
 
   beforeEach(() => {
-    manager = {
-      accessed: [],
-      updated: [],
-      addUpdated(atom) {
-        this.updated.push(atom)
-      },
-      addAccessed(atom) {
-        this.accessed.push(atom)
-      },
-    }
-    atom = new Atom(manager, 'test')
+    atom = new Atom('test')
   })
 
-  it('can notify the manager when updated', () => {
-    atom.updated()
-    expect(manager.updated.length).to.equal(1)
-    expect(manager.updated[0]).to.equal(atom)
+  it('can notify the when updated', () => {
+    const {updated} = track(() => {
+      atom.updated()
+    })
+    expect(updated.size).to.equal(1)
+    expect(updated.has(atom)).to.equal(true)
   })
 
-  it('can notify the manager when accessed', () => {
-    atom.accessed()
-    expect(manager.accessed.length).to.equal(1)
-    expect(manager.accessed[0]).to.equal(atom)
+  it('can notify the when accessed', () => {
+    const {accessed} = track(() => {
+      atom.accessed()
+    })
+    expect(accessed.size).to.equal(1)
+    expect(accessed.has(atom)).to.equal(true)
   })
 })
