@@ -1,11 +1,11 @@
-import memoize from '../src/memoize.mjs' 
+import computed from '../src/computed.mjs' 
 import action from '../src/action.mjs'
 import Atom from '../src/Atom.mjs'
 
-describe('memoize', () => {
+describe('computed', () => {
   it('calls the function the first time it is called', () => {
     let called = false
-    memoize(() => {
+    computed(() => {
       called = true
     })()
     expect(called).to.equal(true)
@@ -13,7 +13,7 @@ describe('memoize', () => {
 
   it('does not call the function the second time it is called', () => {
     let called = 0
-    const fn = memoize(() => {
+    const fn = computed(() => {
       called += 1
     })
     fn()
@@ -25,7 +25,7 @@ describe('memoize', () => {
     const atom = new Atom()
     let count = 0
 
-    const fn = memoize(() => {
+    const fn = computed(() => {
       atom.accessed()
       count += 1
     })
@@ -43,7 +43,7 @@ describe('memoize', () => {
     const atom = new Atom()
     let count = 0
 
-    const fn = memoize(() => {
+    const fn = computed(() => {
       atom.accessed()
       count += 1
     })

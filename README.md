@@ -8,7 +8,7 @@ non-polyfillable Proxies.
 ## Usage example
 
 ```javascript
-import {observable, autorun, memoize, action} from '@adrianhelvik/bind'
+import {observable, autorun, computed, action} from '@adrianhelvik/bind'
 
 const state = observable({
   seconds: 0,
@@ -45,14 +45,14 @@ setInterval(() => {
   state.seconds += 1
 })
 
-// We also have memoized functions. These
+// We also have computed functions. These
 // behave just like normal functions,
 // except for two things. Their arguments
 // are ignored and the actual function
 // will only be called when state used
 // in the function has changed.
 let callCount = 0
-const secondsSquared = memoize(() => {
+const secondsSquared = computed(() => {
   callCount += 1
   return state.seconds ** 2
 })
@@ -83,7 +83,7 @@ secondsSquared()
 console.log(callCount) // Prints: 1
 
 // When we change the seconds in the state,
-// our memoized function has still not been
+// our computed function has still not been
 // called.
 state.seconds = 4
 console.log(callCount) // Prints: 1

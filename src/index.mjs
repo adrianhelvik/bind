@@ -1,6 +1,6 @@
 import createObservableObject from './createObservableObject.mjs'
 import ObservableArray from './ObservableArray'
-import memoize from './memoize.mjs'
+import computed from './computed.mjs'
 
 const observable = Object.assign((value) => {
   if (Array.isArray(value))
@@ -14,6 +14,6 @@ const observable = Object.assign((value) => {
 
 export {
   observable,
+  computed,
   autorun,
-  memoize,
 }

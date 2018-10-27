@@ -3,7 +3,7 @@ import track from './track.mjs'
 const upToDate = 'upToDate'
 const dirty = 'dirty'
 
-function memoize(fn) {
+function computed(fn) {
   let status = dirty
   let removePrevious
   let value
@@ -33,4 +33,4 @@ function memoize(fn) {
   }
 }
 
-export default memoize
+export default computed

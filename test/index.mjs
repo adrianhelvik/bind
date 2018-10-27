@@ -11,7 +11,7 @@ async function main() {
   await import('./ObservableArray.mjs')
   await import('./autorun.mjs')
   await import('./createObservableObject.mjs')
-  await import('./memoize.mjs')
+  await import('./computed.mjs')
 
   mocha.checkLeaks()
   mocha.run()
