@@ -3,6 +3,7 @@ import Tracker from './Tracker.mjs'
 class Manager {
   constructor() {
     this.trackers = new Set()
+    this.transactions = new Set()
     this.activeActions = 0
   }
 
@@ -22,6 +23,33 @@ class Manager {
     tracker.track(fn)
     this.trackers.delete(tracker)
     return tracker
+  }
+
+  transaction(fn) {
+    const transaction = []
+    this.transactions.add(transaction)
+    try {
+      var result = fn()
+    } catch (error) {
+      this.transactions.delete(transaction)
+      return { result: null, transaction, error }
+    }
+    this.transactions.delete(transaction)
+    return { result, transaction }
+  }
+
+  revertTransaction(transaction) {
+    for (const { newProperty, target, property, previous } of transaction) {
+      if (Array.isArray(target) && property === 'length') {
+        while (target.length >= previous) {
+          target.pop()
+        }
+      } else if (newProperty) {
+        delete target[property]
+      } else {
+        target[property] = previous
+      }
+    }
   }
 
   action(fn) {

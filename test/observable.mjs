@@ -1,10 +1,61 @@
-import ObservableArray from '../src/ObservableArray.mjs'
+import observable from '../src/observable.mjs'
+import autorun from '../src/autorun.mjs'
+import action from '../src/action.mjs'
 import track from '../src/track.mjs'
 
-describe('ObservableArray', () => {
+describe('observable', () => {
+  it('can update a property', () => {
+    const object = observable()
+    let message
+
+    autorun(() => {
+      message = object.message
+    })
+
+    object.message = 'Hello world'
+
+    expect(message).to.equal('Hello world')
+  })
+
+  it('does not change when a different property is updated', () => {
+    const object = observable()
+    let count = 0
+
+    autorun(() => {
+      object.notInUse
+      count += 1
+    })
+
+    object.isInUse = true
+
+    expect(count).to.equal(1)
+  })
+
+  it('does not trigger change handlers more than once', () => {
+    const object = observable()
+    let count = 0
+
+    autorun(() => {
+      object.a
+      object.b
+      object.c
+      count += 1
+    })
+
+    action(() => {
+      object.a = 1
+      object.b = 2
+      object.c = 3
+    })
+
+    expect(count).to.equal(2)
+  })
+})
+
+describe('observable array', () => {
   let array
   beforeEach(() => {
-    array = new ObservableArray([1, 2, 3, 4, 5])
+    array = observable([1, 2, 3, 4, 5])
   })
 
   describe('mutators', () => {
@@ -12,21 +63,21 @@ describe('ObservableArray', () => {
       const {updated} = track(() => {
         array.push(1)
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
     })
 
     it('reacts to .splice', () => {
       const {updated} = track(() => {
         array.splice(1, 1)
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
     })
 
     it('reacts to .copyWithin', () => {
       const {updated} = track(() => {
         array.copyWithin(0, 2, 3)
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
       expect(array).to.eql([3, 2, 3, 4, 5])
     })
 
@@ -34,7 +85,7 @@ describe('ObservableArray', () => {
       const {updated} = track(() => {
         array.fill(123)
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
       expect(array).to.eql([123, 123, 123, 123, 123])
     })
 
@@ -42,7 +93,7 @@ describe('ObservableArray', () => {
       const {updated} = track(() => {
         array.pop()
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
       expect(array).to.eql([1, 2, 3, 4])
     })
 
@@ -50,7 +101,7 @@ describe('ObservableArray', () => {
       const {updated} = track(() => {
         array.reverse()
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
       expect(array).to.eql([5, 4, 3, 2, 1])
     })
 
@@ -58,16 +109,16 @@ describe('ObservableArray', () => {
       const {updated} = track(() => {
         expect(array.shift()).to.equal(1)
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
       expect(array).to.eql([2, 3, 4, 5])
     })
 
     it('reacts to .sort', () => {
-      array.replace([5, 3, 2, 4, 1])
+      const array = observable([5, 3, 2, 4, 1])
       const {updated} = track(() => {
         array.sort()
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
       expect(array).to.eql([1, 2, 3, 4, 5])
     })
 
@@ -75,7 +126,7 @@ describe('ObservableArray', () => {
       const {updated} = track(() => {
         array.unshift(10)
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
       expect(array).to.eql([10, 1, 2, 3, 4, 5])
     })
 
@@ -83,7 +134,7 @@ describe('ObservableArray', () => {
       const {updated} = track(() => {
         expect(array.shift()).to.equal(1)
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
       expect(array).to.eql([2, 3, 4, 5])
     })
 
@@ -91,7 +142,7 @@ describe('ObservableArray', () => {
       const {updated} = track(() => {
         array[0] = 10
       })
-      expect(updated.size).to.equal(1)
+      expect(updated.size).not.to.equal(0)
     })
   })
 
@@ -100,7 +151,7 @@ describe('ObservableArray', () => {
       const {accessed} = track(() => {
         for (let item of array);
       })
-      expect(accessed.size).to.equal(1)
+      expect(accessed.size).not.to.equal(0)
     })
 
     it('reacts to index access', () => {
