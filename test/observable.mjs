@@ -30,26 +30,6 @@ describe('observable', () => {
 
     expect(count).to.equal(1)
   })
-
-  it('does not trigger change handlers more than once', () => {
-    const object = observable()
-    let count = 0
-
-    autorun(() => {
-      object.a
-      object.b
-      object.c
-      count += 1
-    })
-
-    action(() => {
-      object.a = 1
-      object.b = 2
-      object.c = 3
-    })
-
-    expect(count).to.equal(2)
-  })
 })
 
 describe('observable array', () => {

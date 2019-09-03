@@ -1,13 +1,28 @@
 import {manager} from './state.mjs'
 
 function autorun(fn) {
-  const {accessed, updated} = manager.track(fn)
+  let removers = []
+  let accessed
+  let updated
 
-  if (updated.size)
-    throw Error('Encountered mutation in an autorun function.')
+  update()
 
-  for (let atom of accessed)
-    atom.onUpdate(fn)
+  function update() {
+    removers.forEach(fn => fn())
+    removers = []
+    ;({ accessed, updated } = manager.track(fn))
+
+    if (updated.size)
+      throw Error('Encountered mutation in an autorun function.')
+
+    for (let atom of accessed) {
+      removers.push(atom.onUpdate(update))
+    }
+  }
+
+  return () => {
+    removers.forEach(fn => fn())
+  }
 }
 
 export default autorun

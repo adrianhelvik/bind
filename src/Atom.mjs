@@ -17,7 +17,7 @@ class Atom {
   onUpdate(fn) {
     this.updateHandlers.add(fn)
     return () => {
-      this.updateHandlers.remove(fn)
+      this.updateHandlers.delete(fn)
     }
   }
 
