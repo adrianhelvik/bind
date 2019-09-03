@@ -19,7 +19,7 @@ class Manager {
 
   track(fn) {
     const tracker = new Tracker(this)
-    this.trackers.add(tracker) - 1
+    this.trackers.add(tracker)
     tracker.track(fn)
     this.trackers.delete(tracker)
     return tracker
