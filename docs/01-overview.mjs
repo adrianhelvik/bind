@@ -4,9 +4,54 @@ import markdown from '../markdown.mjs'
 
 markdown`
 
-# Overview
-Bind is inspired by Mobx to a very large extent.
-There are however some important differences.
+# Overview of @adrianhelvik/bind
+
+## Observables
+An \`observable\` is an object that can be tracked Bind.
+You can create an observable by calling the observable
+function.
+
+${() => {
+  const state = observable()
+}}
+
+You can use the observable as any other object.
+
+${() => {
+  const state = observable()
+  // @start
+  state.message = 'Hello world'
+}}
+
+The interesting thing about observable state is that
+you can react when it changes. Let's use the object
+we just created as an example.
+
+${() => {
+  const state = observable()
+  state.message = 'Hello world'
+  // @start
+  autorun(() => {
+    console.log(`The message is "${state.message}"`)
+  })
+
+  state.message = 'A new message'
+}}
+
+As you could see, the function ran twice. This is
+because it had to track its dependencies. Accessing
+a property on an observable object within an autorun
+function will cause the function to re-run when
+the property changes.
+`
+  /*
+
+
+
+
+
+
+Bind is heavily inspired by Mobx, and is very similar.
 
 ${() => {
   const state = observable()
@@ -42,3 +87,4 @@ ${() => {
   state.foo.bar.baz = 'Hello world!'
 }}
 `
+*/

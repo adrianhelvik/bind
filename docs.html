@@ -1,13 +1,55 @@
 <!doctype html>
 
 <meta charset="utf-8">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/darcula.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css">
 <style>
-:root {
+#root {
   font-family: sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+}
+h1 {
+  font-weight: 200;
+  color: #333;
+  margin: 40px 0;
+}
+h2 {
+  color: #329dff;
 }
 pre {
   border: 1px solid #eee;
+  border-radius: 5px;
+  overflow: hidden;
+}
+pre code:not([class*="language-"]) {
+  background: #f8f8f8;
+  display: block;
+  padding: 10px;
+  color: #333;
+  position: relative;
+  padding-top: 30px;
+}
+pre code:not([class*="language-"]):before {
+  content: 'Output';
+  display: block;
+  position: absolute;
+  padding-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  top: 0px;
+  left: 0px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #aaa;
+  color: white;
+  width: calc(100% + 20px);
+}
+p > code {
+  background: #f8f8f8;
+  color: #333;
+  padding: 1px 4px;
+  border-radius: 2px;
 }
 </style>
 <div id="root"></div>
@@ -17,7 +59,7 @@ pre {
 <script type="module" src="./docs/index.mjs"></script>
 <script type="module">
 document.addEventListener('DOMContentLoaded', (event) => {
-  document.querySelectorAll('pre code').forEach((block) => {
+  document.querySelectorAll('pre code[class*="language-"]').forEach((block) => {
     hljs.highlightBlock(block);
   });
 });
