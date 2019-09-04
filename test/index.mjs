@@ -13,9 +13,9 @@ async function main() {
   await import('./transaction.mjs')
   await import('./Atom.mjs')
   await import('./Manager.mjs')
-  await import('./autorun.mjs')
+  await import('./reaction.mjs')
   await import('./observable.mjs')
-  await import('./computed.mjs')
+  await import('./memoize.mjs')
 
   mocha.checkLeaks()
   mocha.run()

@@ -1,5 +1,5 @@
 import { manager } from './state.mjs'
-import action from './action.mjs'
+import batch from './batch.mjs'
 import Atom from './Atom.mjs'
 
 export const GET_ATOM = Symbol('GET_ATOM')
@@ -20,9 +20,9 @@ function observable(source = {}) {
       if (value && typeof value === 'object')
         return observable(value)
       if (typeof value === 'function')
-        return function actionMethod() {
+        return function batchedMethod() {
           let result
-          action(() => {
+          batch(() => {
             result = value.apply(this, arguments)
           })
           return result
@@ -30,25 +30,23 @@ function observable(source = {}) {
       return value
     },
     set(target, property, value, receiver) {
-      const newProperty = ! Object.prototype.hasOwnProperty.call(target, property)
+      const isNew = ! Object.prototype.hasOwnProperty.call(target, property)
       if (! atoms.has(property))
         atoms.set(property, new Atom(property))
       let result
       let previous
       const atom = atoms.get(property)
-      action(() => {
+      batch(() => {
         previous = target[property]
         result = Reflect.set(target, property, value, receiver)
         atom.updated()
         for (const transaction of manager.transactions) {
           transaction.push({
-            target: source,
-            current: value,
             target: proxy,
-            newProperty,
             property,
             previous,
-            atom,
+            current: value,
+            isNew,
           })
         }
       })

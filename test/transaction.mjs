@@ -1,6 +1,5 @@
-import observable, { GET_ATOM } from '../src/observable.mjs'
-import ObservableArray from '../src/ObservableArray.mjs'
 import transaction from '../src/transaction.mjs'
+import observable from '../src/observable.mjs'
 import { manager } from '../src/state.mjs'
 
 describe('transaction', () => {
@@ -10,17 +9,9 @@ describe('transaction', () => {
     })
     const {transaction} = manager.transaction(() => {
       state.n += 1
+      state.n += 1
     })
-    const atom = state[GET_ATOM]('n')
-    expect(transaction.length).to.equal(1)
-    expect(transaction[0]).to.eql({
-      newProperty: false,
-      target: state,
-      property: 'n',
-      previous: 0,
-      current: 1,
-      atom,
-    })
+    expect(transaction.length).to.equal(2)
   })
 
   it('can be reverted', () => {
@@ -73,7 +64,7 @@ describe('transaction', () => {
 
 
   describe('can revert changes on an observable array', () => {
-    it('ObservableArray.push', () => {
+    it('push()', () => {
       const state = observable([])
 
       state.push(1)

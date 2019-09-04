@@ -1,6 +1,6 @@
 import observable from '../src/observable.mjs'
-import autorun from '../src/autorun.mjs'
-import action from '../src/action.mjs'
+import reaction from '../src/reaction.mjs'
+import batch from '../src/batch.mjs'
 import track from '../src/track.mjs'
 
 describe('observable', () => {
@@ -8,7 +8,7 @@ describe('observable', () => {
     const object = observable()
     let message
 
-    autorun(() => {
+    reaction(() => {
       message = object.message
     })
 
@@ -21,7 +21,7 @@ describe('observable', () => {
     const object = observable()
     let count = 0
 
-    autorun(() => {
+    batch(() => {
       object.notInUse
       count += 1
     })

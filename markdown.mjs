@@ -21,10 +21,14 @@ export default (parts, ...values) => {
       result.push('')
       const log = []
       const consoleLog = console.log
-      console.log = value => {
-        log.push('> ' + String(value))
+      console.log = (...values) => {
+        log.push('> ' + values.map(stringify).join(' '))
       }
-      values[i]()
+      try {
+        values[i]()
+      } catch (e) {
+        log.push(`${e.stack.split('\n')[0]}`)
+      }
       console.log = consoleLog
       if (log.length) {
         result.push('```', ...log, '```')
@@ -33,5 +37,14 @@ export default (parts, ...values) => {
   }
   console.log(result.join('\n'))
   const root = document.querySelector('#root')
-  root.innerHTML += new showdown.Converter().makeHtml(result.join('\n'))
+  const converter = new showdown.Converter()
+  converter.setOption('backslashEscapesHTMLTags', true)
+  root.innerHTML += converter.makeHtml(result.join('\n'))
+}
+
+function stringify(value) {
+  if (typeof value === 'string') {
+    return value
+  }
+  return JSON.stringify(value, null, 2)
 }

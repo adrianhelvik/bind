@@ -5,6 +5,7 @@ class Manager {
     this.trackers = new Set()
     this.transactions = new Set()
     this.activeActions = 0
+    this.debugging = 0
   }
 
   addUpdated(atom) {
@@ -39,21 +40,28 @@ class Manager {
   }
 
   revertTransaction(transaction) {
-    for (const { newProperty, target, property, previous } of transaction) {
+    for (const action of transaction.slice().reverse()) {
+      if (this.debugging) {
+        console.log('Reverting action:', action)
+      }
+      const { isNew, target, property, previous } = action
       if (Array.isArray(target) && property === 'length') {
         while (target.length >= previous) {
           target.pop()
         }
-      } else if (newProperty) {
+      } else if (isNew) {
         delete target[property]
       } else {
         target[property] = previous
       }
+      if (this.debugging) {
+        console.log('Target after reverting:', target)
+      }
     }
   }
 
-  action(fn) {
-    // When the first action is executed,
+  batch(fn) {
+    // When the first batch is executed,
     // create a set for the affected atoms.
     if (this.activeActions === 0)
       this.updatedAtoms = new Set()

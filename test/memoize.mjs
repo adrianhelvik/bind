@@ -1,11 +1,11 @@
-import computed from '../src/computed.mjs' 
-import action from '../src/action.mjs'
+import memoize from '../src/memoize.mjs' 
+import batch from '../src/batch.mjs'
 import Atom from '../src/Atom.mjs'
 
-describe('computed', () => {
+describe('memoize', () => {
   it('calls the function the first time it is called', () => {
     let called = false
-    computed(() => {
+    memoize(() => {
       called = true
     })()
     expect(called).to.equal(true)
@@ -13,7 +13,7 @@ describe('computed', () => {
 
   it('does not call the function the second time it is called', () => {
     let called = 0
-    const fn = computed(() => {
+    const fn = memoize(() => {
       called += 1
     })
     fn()
@@ -25,13 +25,13 @@ describe('computed', () => {
     const atom = new Atom()
     let count = 0
 
-    const fn = computed(() => {
+    const fn = memoize(() => {
       atom.accessed()
       count += 1
     })
 
     fn()
-    action(() => {
+    batch(() => {
       atom.updated()
     })
     fn()
@@ -43,13 +43,13 @@ describe('computed', () => {
     const atom = new Atom()
     let count = 0
 
-    const fn = computed(() => {
+    const fn = memoize(() => {
       atom.accessed()
       count += 1
     })
 
     fn()
-    action(() => {
+    batch(() => {
       atom.updated()
     })
     // fn() <-- Not calling this should prevent triggering the update

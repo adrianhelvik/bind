@@ -1,33 +1,33 @@
 import {manager, resetInternalState} from '../src/state.mjs'
 import observable from '../src/observable.mjs'
-import autorun from '../src/autorun.mjs'
+import reaction from '../src/reaction.mjs'
 import Manager from '../src/Manager.mjs'
-import action from '../src/action.mjs'
+import batch from '../src/batch.mjs'
 import Atom from '../src/Atom.mjs'
 
-describe('autorun', () => {
+describe('reaction', () => {
   beforeEach(() => {
     resetInternalState()
   })
 
   it('runs one time initially', () => {
     let count = 0
-    autorun(() => {
+    reaction(() => {
       count += 1
     })
     expect(count).to.equal(1)
   })
 
-  it('runs each time an atom is updated inside an action', () => {
+  it('runs each time an atom is updated inside a batch', () => {
     const atom = new Atom(manager)
     let count = 0
 
-    autorun(() => {
+    reaction(() => {
       atom.accessed()
       count += 1
     })
 
-    manager.action(() => {
+    manager.batch(() => {
       atom.updated()
     })
 
@@ -38,7 +38,7 @@ describe('autorun', () => {
     const counter = {called: 0}
     const array = observable([])
 
-    autorun(() => {
+    reaction(() => {
       array.length
       counter.called++
     })
@@ -59,7 +59,7 @@ describe('autorun', () => {
       c: 0,
     }
 
-    autorun(() => {
+    reaction(() => {
       if (! state.a) return
       count.a += 1
       if (! state.b) return
@@ -79,18 +79,18 @@ describe('autorun', () => {
     })
   })
 
-  it('does not run before the action is complete', () => {
+  it('does not run before the batch is complete', () => {
     const object = observable()
     let count = 0
 
-    autorun(() => {
+    reaction(() => {
       object.a
       object.b
       object.c
       count += 1
     })
 
-    action(() => {
+    batch(() => {
       object.a = 1
       object.b = 2
       object.c = 3
