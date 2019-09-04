@@ -161,7 +161,7 @@ ${() => {
     state.count += 1
   })
 
-  console.log('^ But only once due to the batching')
+  console.log('^ And once after the batch')
 }}
 
 
