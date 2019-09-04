@@ -15,8 +15,8 @@ function autorun(fn) {
     if (updated.size)
       throw Error('Encountered mutation in an autorun function.')
 
-    for (let atom of accessed) {
-      removers.push(atom.onUpdate(update))
+    for (let binding of accessed) {
+      removers.push(binding.onUpdate(update))
     }
   }
 

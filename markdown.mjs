@@ -1,4 +1,4 @@
-export default (parts, ...values) => {
+export default async (parts, ...values) => {
   const result = []
   for (let i = 0; i < parts.length; i++) {
     result.push(parts[i])
@@ -25,7 +25,7 @@ export default (parts, ...values) => {
         log.push('> ' + values.map(stringify).join(' '))
       }
       try {
-        values[i]()
+        await values[i]()
       } catch (e) {
         log.push(`${e.stack.split('\n')[0]}`)
       }

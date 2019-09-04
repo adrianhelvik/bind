@@ -1,10 +1,16 @@
-import transaction from '../src/transaction.mjs'
-import observable from '../src/observable.mjs'
-import reaction from '../src/reaction.mjs'
-import memoize from '../src/memoize.mjs'
+import {
+  revertTransaction,
+  transaction,
+  observable,
+  reaction,
+  memoize,
+  batch,
+  debug,
+} from '../src/index.mjs'
+
 import markdown from '../markdown.mjs'
-import batch from '../src/batch.mjs'
-import debug from '../src/debug.mjs'
+
+const sleep = t => new Promise(r => setTimeout(r, t))
 
 const assert = function assert(value, message) {
   if (! value) {
@@ -73,7 +79,7 @@ ${() => {
     state.number += 1
   })
 
-  transaction.revert(t)
+  revertTransaction(t)
 
   assert.equal(state.number, 0)
 }}
@@ -164,77 +170,21 @@ ${() => {
   console.log('^ And once after the batch')
 }}
 
+## batch using promises
 
-
-
-
-
-
-`
-
-/*
-The interesting thing about observable state is that
-you can react when it changes. Let's use the object
-we just created as an example.
-
-${() => {
-  const state = observable()
-  state.message = 'Hello world'
-  // @start
-  reaction(() => {
-    console.log(`The message is "${state.message}"`)
+${async () => {
+  const state = observable({
+    message: 'Initial message'
   })
 
-  state.message = 'A new message'
-}}
-
-As you could see, the function ran twice. This is
-because it had to track its dependencies. Accessing
-a property on an observable object within a reaction
-function will cause the function to re-run when
-the property changes.
-`
-  /*
-
-
-
-
-
-
-Bind is heavily inspired by Mobx, and is very similar.
-
-${() => {
-  const state = observable()
-
   reaction(() => {
-    console.log(`The message is: '${state.message}'`)
+    console.log(`The message is: ${state.message}`)
   })
 
-  state.message = 'Hello world'
-  state.message = 'Updated'
-}}
-
-As you can see from this example, we are notified
-when a property on an observable object changes.
-
-Objects are also deeply observable.
-
-${() => {
-  const state = observable()
-
-  reaction(() => {
-    console.log(state && state.foo && state.foo.bar && state.foo.bar.baz || 'state.foo.bar.baz was not set yet')
+  await batch(async () => {
+    state.message = 'This is never displayed'
+    await sleep(100)
+    state.message = 'Final message'
   })
-
-
-  console.log("Let's set state.foo")
-  state.foo = {}
-
-  console.log("Let's set state.foo.bar")
-  state.foo.bar = {}
-
-  console.log("Let's set state.foo.bar.baz")
-  state.foo.bar.baz = 'Hello world!'
 }}
 `
-*/

@@ -1,7 +1,4 @@
-import observable from '../src/observable.mjs'
-import reaction from '../src/reaction.mjs'
-import batch from '../src/batch.mjs'
-import track from '../src/track.mjs'
+import { observable, reaction, batch, track } from '../src/index.mjs'
 
 describe('observable', () => {
   it('can update a property', () => {

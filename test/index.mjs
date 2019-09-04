@@ -11,7 +11,7 @@ async function main() {
   global.expect = chai.expect
 
   await import('./transaction.mjs')
-  await import('./Atom.mjs')
+  await import('./Binding.mjs')
   await import('./Manager.mjs')
   await import('./reaction.mjs')
   await import('./observable.mjs')

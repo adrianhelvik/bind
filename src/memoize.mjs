@@ -14,8 +14,8 @@ function computed(fn) {
         value = fn()
       })
       const removers = new Set()
-      for (const atom of accessed) {
-        const remover = atom.onUpdate(() => {
+      for (const binding of accessed) {
+        const remover = binding.onUpdate(() => {
           status = dirty
 
           // We only need to know that

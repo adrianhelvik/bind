@@ -1,6 +1,6 @@
 import {manager} from './state.mjs'
 
-class Atom {
+class Binding {
   constructor(name) {
     this.updateHandlers = new Set()
     this.name = name
@@ -34,4 +34,4 @@ class Atom {
   }
 }
 
-export default Atom
+export default Binding

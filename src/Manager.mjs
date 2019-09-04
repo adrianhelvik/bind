@@ -8,14 +8,14 @@ class Manager {
     this.debugging = 0
   }
 
-  addUpdated(atom) {
+  addUpdated(binding) {
     for (const tracker of this.trackers)
-      tracker.updated.add(atom)
+      tracker.updated.add(binding)
   }
 
-  addAccessed(atom) {
+  addAccessed(binding) {
     for (const tracker of this.trackers)
-      tracker.accessed.add(atom)
+      tracker.accessed.add(binding)
   }
 
   track(fn) {
@@ -62,9 +62,9 @@ class Manager {
 
   batch(fn) {
     // When the first batch is executed,
-    // create a set for the affected atoms.
+    // create a set for the affected bindings.
     if (this.activeActions === 0)
-      this.updatedAtoms = new Set()
+      this.updatedBindings = new Set()
 
     // We want to know whether there are
     // actions executing at a given time,
@@ -73,30 +73,30 @@ class Manager {
     this.activeActions += 1
 
     try {
-      // Find out which atoms are updated
+      // Find out which bindings are updated
       let result
       const {updated} = this.track(() => {
         result = fn()
       })
-      for (const atom of updated)
-        this.updatedAtoms.add(atom)
+      for (const binding of updated)
+        this.updatedBindings.add(binding)
       return result
     } finally {
       this.activeActions -= 1
 
       // And finally, when all actions are
       // completed, we want to run all
-      // reactions for the affected atoms.
+      // reactions for the affected bindings.
       if (this.activeActions === 0) {
 
         // Store the handlers in a set, so that
-        // if multiple atoms stored the same
+        // if multiple bindings stored the same
         // handlers, we only call those
         // functions once.
         const handlers = new Set()
 
-        for (const atom of this.updatedAtoms)
-          for (const handler of atom.updateHandlers)
+        for (const binding of this.updatedBindings)
+          for (const handler of binding.updateHandlers)
             handlers.add(handler)
 
         for (const handler of handlers) {

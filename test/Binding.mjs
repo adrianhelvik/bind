@@ -1,26 +1,25 @@
-import track from '../src/track.mjs'
-import Atom from '../src/Atom.mjs'
+import { track, Binding } from '../src/index.mjs'
 
-describe('Atom', () => {
-  let atom
+describe('Binding', () => {
+  let binding
 
   beforeEach(() => {
-    atom = new Atom('test')
+    binding = new Binding('test')
   })
 
   it('can notify the when updated', () => {
     const {updated} = track(() => {
-      atom.updated()
+      binding.updated()
     })
     expect(updated.size).to.equal(1)
-    expect(updated.has(atom)).to.equal(true)
+    expect(updated.has(binding)).to.equal(true)
   })
 
   it('can notify the when accessed', () => {
     const {accessed} = track(() => {
-      atom.accessed()
+      binding.accessed()
     })
     expect(accessed.size).to.equal(1)
-    expect(accessed.has(atom)).to.equal(true)
+    expect(accessed.has(binding)).to.equal(true)
   })
 })

@@ -10,7 +10,3 @@ export default function transaction(fn) {
 
   return transaction
 }
-
-transaction.revert = function undoTransaction(transaction) {
-  manager.revertTransaction(transaction)
-}

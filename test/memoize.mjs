@@ -1,6 +1,4 @@
-import memoize from '../src/memoize.mjs' 
-import batch from '../src/batch.mjs'
-import Atom from '../src/Atom.mjs'
+import { memoize, batch, Binding } from '../src/index.mjs' 
 
 describe('memoize', () => {
   it('calls the function the first time it is called', () => {
@@ -21,18 +19,18 @@ describe('memoize', () => {
     expect(called).to.equal(1)
   })
 
-  it('calls the function a second time if an affected atom changed', () => {
-    const atom = new Atom()
+  it('calls the function a second time if an affected binding changed', () => {
+    const binding = new Binding()
     let count = 0
 
     const fn = memoize(() => {
-      atom.accessed()
+      binding.accessed()
       count += 1
     })
 
     fn()
     batch(() => {
-      atom.updated()
+      binding.updated()
     })
     fn()
 
@@ -40,17 +38,17 @@ describe('memoize', () => {
   })
 
   it('does not call the wrapped function a second time before the outer function is called again', () => {
-    const atom = new Atom()
+    const binding = new Binding()
     let count = 0
 
     const fn = memoize(() => {
-      atom.accessed()
+      binding.accessed()
       count += 1
     })
 
     fn()
     batch(() => {
-      atom.updated()
+      binding.updated()
     })
     // fn() <-- Not calling this should prevent triggering the update
 

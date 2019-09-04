@@ -1,15 +1,11 @@
-import {manager, resetInternalState} from '../src/state.mjs'
-import observable from '../src/observable.mjs'
-import reaction from '../src/reaction.mjs'
-import Manager from '../src/Manager.mjs'
-import batch from '../src/batch.mjs'
-import Atom from '../src/Atom.mjs'
+import {
+  observable,
+  reaction,
+  batch,
+  Binding,
+} from '../src/index.mjs'
 
 describe('reaction', () => {
-  beforeEach(() => {
-    resetInternalState()
-  })
-
   it('runs one time initially', () => {
     let count = 0
     reaction(() => {
@@ -18,17 +14,17 @@ describe('reaction', () => {
     expect(count).to.equal(1)
   })
 
-  it('runs each time an atom is updated inside a batch', () => {
-    const atom = new Atom(manager)
+  it('runs each time an binding is updated inside a batch', () => {
+    const binding = new Binding()
     let count = 0
 
     reaction(() => {
-      atom.accessed()
+      binding.accessed()
       count += 1
     })
 
-    manager.batch(() => {
-      atom.updated()
+    batch(() => {
+      binding.updated()
     })
 
     expect(count).to.equal(2)
