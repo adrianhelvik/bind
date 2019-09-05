@@ -1,3 +1,5 @@
+import inspect from './inspect.mjs'
+
 export default async (parts, ...values) => {
   const result = []
   for (let i = 0; i < parts.length; i++) {
@@ -9,12 +11,19 @@ export default async (parts, ...values) => {
         .split('\n')
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i]
-        if (/\/\/\s*@start\s*/.test(line.trim())) {
+        if (/\/\/\s*@start\s*$/.test(line.trim())) {
           start = i + 1
         }
       }
       const fnString = lines
         .slice(start, -1)
+        .filter(line => ! /\/\/\s*@skip\s*$/.test(line))
+        .map(line => {
+          if (line.trim().startsWith('/// ')) {
+            return line.replace('/// ', '')
+          }
+          return line
+        })
         .join('\n')
       result.push(fnString)
       result.push('```')
@@ -22,7 +31,9 @@ export default async (parts, ...values) => {
       const log = []
       const consoleLog = console.log
       console.log = (...values) => {
-        log.push('> ' + values.map(stringify).join(' '))
+        consoleLog.call(console, ...values)
+        consoleLog.call(console, values.map(x => stringify(x)).join(' '))
+        log.push('  ' + values.map(x => stringify(x)).join(' '))
       }
       try {
         await values[i]()
@@ -35,16 +46,33 @@ export default async (parts, ...values) => {
       }
     }
   }
-  console.log(result.join('\n'))
   const root = document.querySelector('#root')
   const converter = new showdown.Converter()
   converter.setOption('backslashEscapesHTMLTags', true)
   root.innerHTML += converter.makeHtml(result.join('\n'))
 }
 
-function stringify(value) {
-  if (typeof value === 'string') {
-    return value
+function stringify(x) {
+  if (typeof x === 'string') return x
+  if (x && (x instanceof Set)) {
+    return setToStr(x)
   }
-  return JSON.stringify(value, null, 2)
+  if (x && (x instanceof Map)) {
+    return mapToStr(x)
+  }
+
+  return inspect(x)
+}
+
+function mapToStr(map) {
+  var obj = {}
+  map.forEach((v, k) => {
+    console.log(k, v)
+    obj[k] = v
+  })
+  return 'Map(' + stringify(obj) + ')'
+}
+
+function setToStr(set) {
+  return 'Set(' + stringify(Array.from(set)) + ')'
 }

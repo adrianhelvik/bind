@@ -40,24 +40,26 @@ class Manager {
   }
 
   revertTransaction(transaction) {
-    for (const action of transaction.slice().reverse()) {
-      if (this.debugging) {
-        console.log('Reverting action:', action)
-      }
-      const { isNew, target, property, previous } = action
-      if (Array.isArray(target) && property === 'length') {
-        while (target.length >= previous) {
-          target.pop()
+    this.batch(() => {
+      for (const action of transaction.slice().reverse()) {
+        if (this.debugging) {
+          console.log('Reverting action:', action)
         }
-      } else if (isNew) {
-        delete target[property]
-      } else {
-        target[property] = previous
+        const { isNew, target, property, previous } = action
+        if (Array.isArray(target) && property === 'length') {
+          while (target.length >= previous) {
+            target.pop()
+          }
+        } else if (isNew) {
+          delete target[property]
+        } else {
+          target[property] = previous
+        }
+        if (this.debugging) {
+          console.log('Target after reverting:', target)
+        }
       }
-      if (this.debugging) {
-        console.log('Target after reverting:', target)
-      }
-    }
+    })
   }
 
   batch(fn) {

@@ -1,12 +1,19 @@
 import { manager } from './state.mjs'
+import batch from './batch.mjs'
 
 export default function transaction(fn) {
-  const { error, transaction } =  manager.transaction(fn)
+  let result
 
-  if (error) {
-    manager.revertTransaction(transaction)
-    throw error
-  }
+  batch(() => {
+    const { error, transaction } =  manager.transaction(fn)
 
-  return transaction
+    if (error) {
+      manager.revertTransaction(transaction)
+      throw error
+    }
+
+    result = transaction
+  })
+
+  return result
 }

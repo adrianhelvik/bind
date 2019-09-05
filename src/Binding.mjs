@@ -3,7 +3,11 @@ import {manager} from './state.mjs'
 class Binding {
   constructor(name) {
     this.updateHandlers = new Set()
-    this.name = name
+    this.name = name || 'untitled'
+  }
+
+  inspect() {
+    return `Binding('${this.name.replace(/'/g, '\\\'')}')`
   }
 
   updated() {

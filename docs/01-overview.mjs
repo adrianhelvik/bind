@@ -6,6 +6,7 @@ import {
   memoize,
   batch,
   debug,
+  track,
 } from '../src/index.mjs'
 
 import markdown from '../markdown.mjs'
@@ -13,7 +14,7 @@ import markdown from '../markdown.mjs'
 const sleep = t => new Promise(r => setTimeout(r, t))
 
 const assert = function assert(value, message) {
-  if (! value) {
+  if (!value) {
     throw Error(message || 'Assertion failed')
   }
 }
@@ -27,77 +28,58 @@ markdown`
 # @bind/core
 
 ## Observables
-An observable is an object that can be tracked by Bind.
-You can create an observable by calling the \`observable\`
-function, on an object or without an argument.
-
-It supports objects, arrays, Map, Set and more.
+The properties of an observable object is tracked by Bind.
+You can create one yourself like this:
 
 ${() => {
+  /// import { observable } from '@bind/core'
+
   observable()
   observable({ message: 'Hello world' })
-  observable([])
+  observable([1, 2, 3])
 }}
 
-## Transactions
-Runs a set of updates in a transaction. If an error is
-thrown during the transaction, all updates are reversed.
+## How it all works: Tracking bindings
+What we actually do when we create an observable is that
+we intercept property getters and setters while we keep
+track of accessed and updated properties.
 
-Ensure that no side effects that mutate non-observables
-happpen in the transaction. Only changes to observables
-can be reverted.
+This can be demonstrated with the track function.
 
 ${() => {
-  const state = observable({
-    number: 0,
+  /// import { observable, track } from '@bind/core'
+
+  const state = observable()
+
+  const { accessed, updated } = track(() => {
+    state.hello = 'world' // Updated 'world'
+    state.foo = 'bar'     // Updated 'foo'
+    state.hello           // Accessed 'hello'
   })
 
-  try {
-    transaction(() => {
-      state.number += 1
-      console.log(`Number before error was thrown: ${state.number}`)
-
-      throw Error('Canceling the transaction')
-    })
-  } catch (e) {
-    console.log(`Caught error: ${e.message}`)
-  }
-
-  console.log(`The number is then reset to ${state.number}`)
+  console.log('Updated:', updated)
+  console.log('Accessed:', accessed)
 }}
 
-### Manually reverting a transaction
+We can use the information gathered by the track function
+to determine what has been updated and accessed within a
+function.
+
+Let's use this for something interesting!
+
+## Memoized functions
+
+When a function is memoized, the return value is cached. It will
+return this cached value on subsequent calls until a dependency
+has been changed.
+
+When a property the function depends on has been changed (such as
+\`firstName\` in the example below), the cache is removed and
+must be calculated on the next call.
 
 ${() => {
-  const state = observable({
-    number: 0,
-  })
+  /// import { observable, memoize, debug } from '@bind/core'
 
-  const t = transaction(() => {
-    state.number += 1
-    state.number += 1
-    state.number += 1
-  })
-
-  revertTransaction(t)
-
-  assert.equal(state.number, 0)
-}}
-
-## memoize
-\`memoize\` accepts a function and returns a memoized version
-of it.
-
-The first time the memoized function is run, the target function
-also runs. All observable properties that are accessed within the
-function is stored, and an update listener is added to each of
-these.
-
-When an observable that is depended upon in the function is
-changed, the function is marked as "dirty". If a memoized function
-is dirty when called, its result and dependencies are recalculated.
-
-${() => {
   const state = observable({
     firstName: 'Peter',
     lastName: 'Parker',
@@ -108,17 +90,44 @@ ${() => {
     return `${state.firstName} ${state.lastName}`
   })
 
+  a:
+  console.log('a:') // @skip
   console.log(fullName())
+  console.log('') // @skip
+
+  b:
+  console.log('b:')  // @skip
   console.log(fullName())
-  state.firstName = 'Clara'
+  console.log('') // @skip
+
+  c:
+  console.log('c:') // @skip
+  debug(() => {
+    state.firstName = 'Clara' // This resets the cache of fullName
+  })
+  console.log('') // @skip
+
+  d:
+  console.log('d:') // @skip
   console.log(fullName())
 }}
 
-## reaction
+**a:** The memoized function is called for the first time, and
+   has to be calculated.
 
-A reaction is called whenever its dependencies change.
-This can be useful if you want a change in some observable
-state to trigger side effects.
+**b:** The memoized function returns the cached value.
+
+**c:** Setting \`firstName\` resets the cache.
+
+**d:** The value has to be calculated.
+
+## Reacting to state changes
+
+Memoized functions are great, but wouldn't it be great
+if the function was called automatically when its state
+changes?
+
+That is what \`reaction()\` does!
 
 ${() => {
   const state = observable({
@@ -127,7 +136,7 @@ ${() => {
 
   reaction(() => {
     // As state.count is used here,
-    // the reaction will be called
+    // this function will be called
     // whenever the count updates.
     console.log(`Count: ${state.count}`)
   })
@@ -141,11 +150,14 @@ ${() => {
   console.log('^ And once every time state it depends on is updated')
 }}
 
-## batch
+## Batching updates
 
-Sometimes you don't want more than one reaction after an update.
-Say you update multiple pieces of state for a React component,
-you don't want to render once for every change.
+Sometimes you don't want more than one reaction, but you
+need to make multiple updates.
+
+For example: When you update multiple pieces of state for
+a React component, you don't want to render once for
+every change.
 
 ${() => {
   const state = observable({
@@ -170,21 +182,56 @@ ${() => {
   console.log('^ And once after the batch')
 }}
 
-## batch using promises
+## Transactions
+Runs a set of updates in a transaction. If an error is
+thrown during the transaction, all updates are reversed.
 
-${async () => {
+Ensure that no side effects that mutate non-observables
+happpen in the transaction. Only changes to observables
+can be reverted.
+
+*Transactions and reversed of transactions are batched.*
+
+### State is recovered if a transaction fails
+
+${() => {
   const state = observable({
-    message: 'Initial message'
+    number: 0,
   })
 
-  reaction(() => {
-    console.log(`The message is: ${state.message}`)
-  })
+  try {
+    transaction(() => {
+      state.number += 1
+      console.log(`Number before error was thrown: ${state.number}`)
+      throw Error('Canceling the transaction')
+    })
+  } catch (e) {
+    console.log(`Caught error: ${e.message}`)
+  }
 
-  await batch(async () => {
-    state.message = 'This is never displayed'
-    await sleep(100)
-    state.message = 'Final message'
-  })
+  console.log(`The number was reset to ${state.number}`)
 }}
+
+### A transaction can also be reverted manually
+
+${() => {
+  const state = observable({
+    number: 0,
+  })
+
+  const t = transaction(() => {
+    state.number += 1
+    state.number += 1
+    state.number += 1
+  })
+
+  console.log('Number before reversal:', state.number)
+
+  revertTransaction(t)
+
+  console.log('Number after reversal:', state.number)
+}}
+
+Transactions can be used to implement undo/redo, and
+to prevent inconsistent states.
 `

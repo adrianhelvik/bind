@@ -40,6 +40,9 @@ function observable(source = {}) {
         previous = target[property]
         result = Reflect.set(target, property, value, receiver)
         binding.updated()
+        if (manager.debugging) {
+          console.log(`[debug]: Updated observable property '${property}' to:`, value)
+        }
         for (const transaction of manager.transactions) {
           transaction.push({
             target: proxy,

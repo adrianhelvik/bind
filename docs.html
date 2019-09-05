@@ -1,20 +1,50 @@
 <!doctype html>
 
 <meta charset="utf-8">
+
+<!-- Google fonts -->
+<link href="https://fonts.googleapis.com/css?family=Manjari|Noto+Serif|Ubuntu|Merriweather|Lexend+Deca&display=swap" rel="stylesheet">
+<!--              -->
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css">
 <style>
+body {
+  margin: 35px;
+}
 #root {
-  font-family: sans-serif;
-  max-width: 600px;
+  font-family: 'Noto Serif', sans-serif;
+  font-size: 18px;
+  max-width: 800px;
   margin: 0 auto;
+  color: #555;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lexend Deca', sans-serif;
+  color: #d14;
 }
 h1 {
-  font-weight: 200;
-  color: #333;
-  margin: 40px 0;
+  margin-top: 40px;
+  margin-bottom: 60px;
+  color: white;
+}
+h1::before {
+  content: '';
+  background-color: #f8f8f8;
+  background: #d14;
+  position: absolute;
+  display: block;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  border-bottom: 1px solid #aaa;
 }
 h2 {
-  color: #333;
+  margin-top: 60px;
+}
+p {
+  font-weight: 300;
 }
 pre {
   border: 1px solid #eee;
@@ -29,7 +59,7 @@ pre code:not([class*="language-"]) {
   position: relative;
   padding-top: 30px;
 }
-pre code:not([class*="language-"]):before {
+pre code:not([class*="language-"])::before {
   content: 'Output';
   display: block;
   position: absolute;

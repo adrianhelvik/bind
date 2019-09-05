@@ -1,9 +1,10 @@
+import { manager } from './state.mjs'
 import track from './track.mjs'
 
 const upToDate = 'upToDate'
 const dirty = 'dirty'
 
-function computed(fn) {
+function memoize(fn) {
   let status = dirty
   let removePrevious
   let value
@@ -16,6 +17,9 @@ function computed(fn) {
       const removers = new Set()
       for (const binding of accessed) {
         const remover = binding.onUpdate(() => {
+          if (manager.debugging) {
+            console.log('[debug]: Cache reset for memoized function')
+          }
           status = dirty
 
           // We only need to know that
@@ -33,4 +37,4 @@ function computed(fn) {
   }
 }
 
-export default computed
+export default memoize
