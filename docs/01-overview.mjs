@@ -140,14 +140,35 @@ ${() => {
     // whenever the count updates.
     console.log(`Count: ${state.count}`)
   })
-
-  console.log('^ The reaction is called once immediately')
+  console.log('^ The reaction is called once when the reaction is created') // @skip
 
   state.count += 1
   state.count += 1
   state.count += 1
 
-  console.log('^ And once every time state it depends on is updated')
+  console.log('^ And once every time state it depends on is updated') // @skip
+}}
+
+If you provide a second function, the second function is
+called only when the first one returns a truthy value.
+
+If you provide a third function, the third function is
+called only when the first one returns a falsey value.
+
+${() => {
+  const state = observable({
+    count: 0,
+  })
+
+  const cancelReaction = reaction(() => {
+    console.log(`The count is ${state.count}`)
+    return state.count < 5
+  }, () => {
+    console.log('Incrementing count...')
+    state.count += 1
+  }, () => {
+    console.log('Count wasn\'t less than 5')
+  })
 }}
 
 ## Batching updates
@@ -170,8 +191,7 @@ ${() => {
     // whenever the count updates.
     console.log(`Count: ${state.count}`)
   })
-
-  console.log('^ The reaction is called once immediately')
+  console.log('^ The reaction is called once when it is created') // @skip
 
   batch(() => {
     state.count += 1
@@ -179,7 +199,7 @@ ${() => {
     state.count += 1
   })
 
-  console.log('^ And once after the batch')
+  console.log('^ And once after the batch') // @skip
 }}
 
 ## Transactions
@@ -203,10 +223,10 @@ ${() => {
     transaction(() => {
       state.number += 1
       console.log(`Number before error was thrown: ${state.number}`)
-      throw Error('Canceling the transaction')
+      throw Error('-- Transaction cancelled --')
     })
   } catch (e) {
-    console.log(`Caught error: ${e.message}`)
+    console.log(`${e.message}`) // @skip
   }
 
   console.log(`The number was reset to ${state.number}`)
