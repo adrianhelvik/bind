@@ -1,4 +1,4 @@
-import Tracker from './Tracker.mjs'
+import Tracker from './Tracker.js'
 
 class Manager {
   constructor() {
@@ -9,13 +9,11 @@ class Manager {
   }
 
   addUpdated(binding) {
-    for (const tracker of this.trackers)
-      tracker.updated.add(binding)
+    for (const tracker of this.trackers) tracker.updated.add(binding)
   }
 
   addAccessed(binding) {
-    for (const tracker of this.trackers)
-      tracker.accessed.add(binding)
+    for (const tracker of this.trackers) tracker.accessed.add(binding)
   }
 
   track(fn) {
@@ -65,8 +63,7 @@ class Manager {
   batch(fn) {
     // When the first batch is executed,
     // create a set for the affected bindings.
-    if (this.activeActions === 0)
-      this.updatedBindings = new Set()
+    if (this.activeActions === 0) this.updatedBindings = new Set()
 
     // We want to know whether there are
     // actions executing at a given time,
@@ -77,11 +74,10 @@ class Manager {
     try {
       // Find out which bindings are updated
       let result
-      const {updated} = this.track(() => {
+      const { updated } = this.track(() => {
         result = fn()
       })
-      for (const binding of updated)
-        this.updatedBindings.add(binding)
+      for (const binding of updated) this.updatedBindings.add(binding)
       return result
     } finally {
       this.activeActions -= 1
@@ -90,7 +86,6 @@ class Manager {
       // completed, we want to run all
       // reactions for the affected bindings.
       if (this.activeActions === 0) {
-
         // Store the handlers in a set, so that
         // if multiple bindings stored the same
         // handlers, we only call those
@@ -98,8 +93,7 @@ class Manager {
         const handlers = new Set()
 
         for (const binding of this.updatedBindings)
-          for (const handler of binding.updateHandlers)
-            handlers.add(handler)
+          for (const handler of binding.updateHandlers) handlers.add(handler)
 
         for (const handler of handlers) {
           try {
@@ -114,8 +108,7 @@ class Manager {
         }
       }
 
-      if (error)
-        throw error
+      if (error) throw error
     }
   }
 }

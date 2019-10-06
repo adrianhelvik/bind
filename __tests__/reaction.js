@@ -1,9 +1,4 @@
-import {
-  observable,
-  reaction,
-  batch,
-  Binding,
-} from '../src/index.mjs'
+import { observable, reaction, batch, Binding } from '../src/index.js'
 
 describe('reaction', () => {
   it('runs one time initially', () => {
@@ -11,7 +6,7 @@ describe('reaction', () => {
     reaction(() => {
       count += 1
     })
-    expect(count).to.equal(1)
+    expect(count).toBe(1)
   })
 
   it('runs each time an binding is updated inside a batch', () => {
@@ -27,11 +22,11 @@ describe('reaction', () => {
       binding.updated()
     })
 
-    expect(count).to.equal(2)
+    expect(count).toBe(2)
   })
 
   it('works with observable arrays', () => {
-    const counter = {called: 0}
+    const counter = { called: 0 }
     const array = observable([])
 
     reaction(() => {
@@ -39,11 +34,11 @@ describe('reaction', () => {
       counter.called++
     })
 
-    expect(counter.called).to.equal(1)
+    expect(counter.called).toBe(1)
 
     array.push(10)
 
-    expect(counter.called).to.equal(2)
+    expect(counter.called).toBe(2)
   })
 
   it('allows changes in the tracked variables', () => {
@@ -56,11 +51,11 @@ describe('reaction', () => {
     }
 
     reaction(() => {
-      if (! state.a) return
+      if (!state.a) return
       count.a += 1
-      if (! state.b) return
+      if (!state.b) return
       count.b += 1
-      if (! state.c) return
+      if (!state.c) return
       count.c += 1
     })
 
@@ -68,7 +63,7 @@ describe('reaction', () => {
     state.b = true
     state.c = true
 
-    expect(count).to.eql({
+    expect(count).toEqual({
       a: 3,
       b: 2,
       c: 1,
@@ -92,6 +87,6 @@ describe('reaction', () => {
       object.c = 3
     })
 
-    expect(count).to.equal(2)
+    expect(count).toBe(2)
   })
 })

@@ -7,7 +7,7 @@ import {
   batch,
   debug,
   track,
-} from '../src/index.mjs'
+} from '../src/index.js'
 
 import markdown from '../markdown.mjs'
 

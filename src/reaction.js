@@ -1,4 +1,4 @@
-import {manager} from './state.mjs'
+import { manager } from './state.js'
 
 function autorun(fn, whenTrue, whenFalse) {
   let removers = []
@@ -26,7 +26,7 @@ function autorun(fn, whenTrue, whenFalse) {
       whenTrue(returnValue)
     }
 
-    if (! returnValue && typeof whenFalse === 'function') {
+    if (!returnValue && typeof whenFalse === 'function') {
       whenFalse(returnValue)
     }
   }

@@ -1,8 +1,4 @@
-import {
-  revertTransaction,
-  transaction,
-  observable,
-} from '../src/index.mjs'
+import { revertTransaction, transaction, observable } from '../src/index.js'
 
 describe('transaction', () => {
   it('tracks updates', () => {
@@ -13,7 +9,7 @@ describe('transaction', () => {
       state.n += 1
       state.n += 1
     })
-    expect(t.length).to.equal(2)
+    expect(t.length).toBe(2)
   })
 
   it('can be reverted', () => {
@@ -44,12 +40,10 @@ describe('transaction', () => {
         intermittentValue = state.n
         throw Error('Purposefully throwing an error')
       })
-    } catch (e) {
-      console.log('Expected error:', e)
-    }
+    } catch (e) {}
 
-    expect(state.n).to.equal(0)
-    expect(intermittentValue).to.equal(1)
+    expect(state.n).toBe(0)
+    expect(intermittentValue).toBe(1)
   })
 
   it('can recover a previously undefined property', () => {
@@ -61,9 +55,8 @@ describe('transaction', () => {
 
     revertTransaction(t)
 
-    expect(state.hasOwnProperty('new')).to.equal(false)
+    expect(state.hasOwnProperty('new')).toBe(false)
   })
-
 
   describe('can revert changes on an observable array', () => {
     it('push()', () => {
@@ -82,7 +75,7 @@ describe('transaction', () => {
         })
       } catch (e) {}
 
-      expect(state).to.eql([1, 2, 3])
+      expect(state).toEqual([1, 2, 3])
     })
   })
 })

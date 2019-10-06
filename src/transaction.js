@@ -1,11 +1,11 @@
-import { manager } from './state.mjs'
-import batch from './batch.mjs'
+import { manager } from './state.js'
+import batch from './batch.js'
 
 export default function transaction(fn) {
   let result
 
   batch(() => {
-    const { error, transaction } =  manager.transaction(fn)
+    const { error, transaction } = manager.transaction(fn)
 
     if (error) {
       manager.revertTransaction(transaction)

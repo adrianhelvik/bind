@@ -1,4 +1,4 @@
-import {manager} from './state.mjs'
+import { manager } from './state.js'
 
 function track(fn) {
   return manager.track(fn)

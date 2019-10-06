@@ -1,6 +1,6 @@
-import { manager } from './state.mjs'
-import Binding from './Binding.mjs'
-import batch from './batch.mjs'
+import { manager } from './state.js'
+import Binding from './Binding.js'
+import batch from './batch.js'
 
 export const GET_BINDING = Symbol('GET_BINDING')
 
@@ -13,12 +13,10 @@ function observable(source = {}) {
       if (property === GET_BINDING) {
         return getBinding
       }
-      if (! bindings.has(property))
-        bindings.set(property, new Binding(property))
+      if (!bindings.has(property)) bindings.set(property, new Binding(property))
       bindings.get(property).accessed()
       const value = Reflect.get(target, property, receiver)
-      if (value && typeof value === 'object')
-        return observable(value)
+      if (value && typeof value === 'object') return observable(value)
       if (typeof value === 'function')
         return function batchedMethod() {
           let result
@@ -30,9 +28,8 @@ function observable(source = {}) {
       return value
     },
     set(target, property, value, receiver) {
-      const isNew = ! Object.prototype.hasOwnProperty.call(target, property)
-      if (! bindings.has(property))
-        bindings.set(property, new Binding(property))
+      const isNew = !Object.prototype.hasOwnProperty.call(target, property)
+      if (!bindings.has(property)) bindings.set(property, new Binding(property))
       let result
       let previous
       const binding = bindings.get(property)
@@ -41,7 +38,10 @@ function observable(source = {}) {
         result = Reflect.set(target, property, value, receiver)
         binding.updated()
         if (manager.debugging) {
-          console.log(`[debug]: Updated observable property '${property}' to:`, value)
+          console.log(
+            `[debug]: Updated observable property '${property}' to:`,
+            value,
+          )
         }
         for (const transaction of manager.transactions) {
           transaction.push({
@@ -54,7 +54,7 @@ function observable(source = {}) {
         }
       })
       return result
-    }
+    },
   })
 
   return proxy

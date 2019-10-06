@@ -1,4 +1,4 @@
-import { memoize, batch, Binding } from '../src/index.mjs' 
+import { memoize, batch, Binding } from '../src/index.js'
 
 describe('memoize', () => {
   it('calls the function the first time it is called', () => {
@@ -6,7 +6,7 @@ describe('memoize', () => {
     memoize(() => {
       called = true
     })()
-    expect(called).to.equal(true)
+    expect(called).toBe(true)
   })
 
   it('does not call the function the second time it is called', () => {
@@ -16,7 +16,7 @@ describe('memoize', () => {
     })
     fn()
     fn()
-    expect(called).to.equal(1)
+    expect(called).toBe(1)
   })
 
   it('calls the function a second time if an affected binding changed', () => {
@@ -34,7 +34,7 @@ describe('memoize', () => {
     })
     fn()
 
-    expect(count).to.equal(2)
+    expect(count).toBe(2)
   })
 
   it('does not call the wrapped function a second time before the outer function is called again', () => {
@@ -52,6 +52,6 @@ describe('memoize', () => {
     })
     // fn() <-- Not calling this should prevent triggering the update
 
-    expect(count).to.equal(1)
+    expect(count).toBe(1)
   })
 })

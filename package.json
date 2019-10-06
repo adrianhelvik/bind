@@ -6,7 +6,16 @@
   "license": "MIT",
   "babel": {
     "presets": [
-      "env"
+      "@babel/preset-env"
     ]
+  },
+  "scripts": {
+    "start": "jest --watch",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "jest": "^24.9.0"
   }
 }

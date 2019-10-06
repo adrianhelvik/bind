@@ -1,5 +1,5 @@
-import { manager } from './state.mjs'
-import track from './track.mjs'
+import { manager } from './state.js'
+import track from './track.js'
 
 const upToDate = 'upToDate'
 const dirty = 'dirty'
@@ -11,7 +11,7 @@ function memoize(fn) {
 
   return () => {
     if (status === dirty) {
-      const {accessed} = track(() => {
+      const { accessed } = track(() => {
         value = fn()
       })
       const removers = new Set()
@@ -27,8 +27,7 @@ function memoize(fn) {
           // so we can safely remove
           // further tracking until
           // the value is clean again.
-          for (const remover of removers)
-            remover()
+          for (const remover of removers) remover()
         })
       }
       status = upToDate

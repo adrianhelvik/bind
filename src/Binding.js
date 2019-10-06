@@ -1,4 +1,4 @@
-import {manager} from './state.mjs'
+import { manager } from './state.js'
 
 class Binding {
   constructor(name) {
@@ -7,7 +7,7 @@ class Binding {
   }
 
   inspect() {
-    return `Binding('${this.name.replace(/'/g, '\\\'')}')`
+    return `Binding('${this.name.replace(/'/g, "\\'")}')`
   }
 
   updated() {
@@ -33,8 +33,7 @@ class Binding {
         var error = error || e
       }
     }
-    if (error)
-      throw error
+    if (error) throw error
   }
 }
 
