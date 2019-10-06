@@ -1,4 +1,4 @@
-# @flyt/bind
+# @adrianhelvik/bind
 
 ## Observables
 The properties of an observable object is tracked by Bind.
@@ -6,7 +6,7 @@ You can create one yourself like this:
 
 
 ```javascript
-  import { observable } from '@flyt/bind'
+  import { observable } from '@adrianhelvik/bind'
 
   observable()
   observable({ message: 'Hello world' })
@@ -24,7 +24,7 @@ This can be demonstrated with the track function.
 
 
 ```javascript
-  import { observable, track } from '@flyt/bind'
+  import { observable, track } from '@adrianhelvik/bind'
 
   const state = observable()
 
@@ -63,7 +63,7 @@ must be calculated on the next call.
 
 
 ```javascript
-  import { observable, memoize, debug } from '@flyt/bind'
+  import { observable, memoize, debug } from '@adrianhelvik/bind'
 
   const state = observable({
     firstName: 'Peter',
@@ -282,7 +282,7 @@ can be reverted.
     revertTransaction,
     transaction,
     observable,
-  } from '@flyt/bind'
+  } from '@adrianhelvik/bind'
 
   const state = observable({
     number: 0,

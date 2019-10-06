@@ -25,14 +25,14 @@ assert.equal = function assertEqual(actual, expected) {
 
 markdown`
 
-# @flyt/bind
+# @adrianhelvik/bind
 
 ## Observables
 The properties of an observable object is tracked by Bind.
 You can create one yourself like this:
 
 ${() => {
-  /// import { observable } from '@flyt/bind'
+  /// import { observable } from '@adrianhelvik/bind'
 
   observable()
   observable({ message: 'Hello world' })
@@ -47,7 +47,7 @@ track of accessed and updated properties.
 This can be demonstrated with the track function.
 
 ${() => {
-  /// import { observable, track } from '@flyt/bind'
+  /// import { observable, track } from '@adrianhelvik/bind'
 
   const state = observable()
 
@@ -78,7 +78,7 @@ When a property the function depends on has been changed (such as
 must be calculated on the next call.
 
 ${() => {
-  /// import { observable, memoize, debug } from '@flyt/bind'
+  /// import { observable, memoize, debug } from '@adrianhelvik/bind'
 
   const state = observable({
     firstName: 'Peter',
@@ -239,7 +239,7 @@ ${() => {
   ///   revertTransaction,
   ///   transaction,
   ///   observable,
-  /// } from '@flyt/bind'
+  /// } from '@adrianhelvik/bind'
 
   const state = observable({
     number: 0,
