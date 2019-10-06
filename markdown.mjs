@@ -49,7 +49,9 @@ export default async (parts, ...values) => {
   const root = document.querySelector('#root')
   const converter = new showdown.Converter()
   converter.setOption('backslashEscapesHTMLTags', true)
-  root.innerHTML += converter.makeHtml(result.join('\n'))
+  const md = result.join('\n')
+  console.log(md)
+  root.innerHTML += converter.makeHtml(md)
 }
 
 function stringify(x) {
