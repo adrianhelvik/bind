@@ -31,3 +31,41 @@ it('can react to updated bindings within a batch', () => {
   })
   expect(updated).toBe(1)
 })
+
+test('update bug', () => {
+  class Todo {
+    constructor(values) {
+      this.done = false
+      this.text = ''
+
+      Object.assign(this, values)
+    }
+
+    toggle() {
+      this.done = !this.done
+    }
+  }
+
+  const state = observable({
+    todos: [
+      new Todo({
+        text: 'make todo list',
+        done: true,
+      }),
+    ],
+  })
+
+  const result = []
+  let i = 0
+
+  reaction(() => {
+    result.push(`reaction ${++i}`)
+    for (const todo of state.todos) {
+      todo.done
+    }
+  })
+
+  state.todos[0].done = false
+
+  expect(result).toEqual(['reaction 1', 'reaction 2'])
+})

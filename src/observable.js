@@ -3,8 +3,13 @@ import Binding from './Binding.js'
 import batch from './batch.js'
 
 export const GET_BINDING = Symbol('GET_BINDING')
+const observables = new WeakMap()
 
 function observable(source = {}) {
+  if (observables.has(source)) {
+    return observables.get(source)
+  }
+
   const bindings = new Map()
   const getBinding = key => bindings.get(key)
 
@@ -13,11 +18,20 @@ function observable(source = {}) {
       if (property === GET_BINDING) {
         return getBinding
       }
-      if (!bindings.has(property)) bindings.set(property, new Binding(property))
+
+      if (!bindings.has(property)) {
+        bindings.set(property, new Binding(property))
+      }
+
       bindings.get(property).accessed()
+
       const value = Reflect.get(target, property, receiver)
-      if (value && typeof value === 'object') return observable(value)
-      if (typeof value === 'function')
+
+      if (value && typeof value === 'object') {
+        return observable(value)
+      }
+
+      if (typeof value === 'function') {
         return function batchedMethod() {
           let result
           batch(() => {
@@ -25,11 +39,16 @@ function observable(source = {}) {
           })
           return result
         }
+      }
       return value
     },
     set(target, property, value, receiver) {
       const isNew = !Object.prototype.hasOwnProperty.call(target, property)
-      if (!bindings.has(property)) bindings.set(property, new Binding(property))
+
+      if (!bindings.has(property)) {
+        bindings.set(property, new Binding(property))
+      }
+
       let result
       let previous
       const binding = bindings.get(property)
@@ -37,12 +56,6 @@ function observable(source = {}) {
         previous = target[property]
         result = Reflect.set(target, property, value, receiver)
         binding.updated()
-        if (manager.debugging) {
-          console.log(
-            `[debug]: Updated observable property '${property}' to:`,
-            value,
-          )
-        }
         for (const transaction of manager.transactions) {
           transaction.push({
             target: proxy,
@@ -56,6 +69,8 @@ function observable(source = {}) {
       return result
     },
   })
+
+  observables.set(source, proxy)
 
   return proxy
 }
