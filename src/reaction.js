@@ -1,6 +1,6 @@
 import { manager } from './state.js'
 
-function autorun(fn, whenTrue, whenFalse) {
+function reaction(fn, whenTrue, whenFalse) {
   let removers = []
   let accessed
   let updated
@@ -15,11 +15,13 @@ function autorun(fn, whenTrue, whenFalse) {
       returnValue = fn()
     }))
 
-    if (updated.size)
-      throw Error('Encountered mutation in an autorun function.')
+    if (updated.size) {
+      throw Error('Encountered mutation in a reaction.')
+    }
 
     for (let binding of accessed) {
-      removers.push(binding.onUpdate(update))
+      const removeListener = binding.onUpdate(update)
+      removers.push(removeListener)
     }
 
     if (returnValue && typeof whenTrue === 'function') {
@@ -36,4 +38,4 @@ function autorun(fn, whenTrue, whenFalse) {
   }
 }
 
-export default autorun
+export default reaction

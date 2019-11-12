@@ -9,11 +9,22 @@ class Manager {
   }
 
   addUpdated(binding) {
-    for (const tracker of this.trackers) tracker.updated.add(binding)
+    if (this.trackers.size === 0) {
+      const updateHandlers = [...binding.updateHandlers]
+      updateHandlers.forEach(fn => {
+        fn()
+      })
+    } else {
+      for (const tracker of this.trackers) {
+        tracker.updated.add(binding)
+      }
+    }
   }
 
   addAccessed(binding) {
-    for (const tracker of this.trackers) tracker.accessed.add(binding)
+    for (const tracker of this.trackers) {
+      tracker.accessed.add(binding)
+    }
   }
 
   track(fn) {
