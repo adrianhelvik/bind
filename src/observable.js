@@ -2,10 +2,15 @@ import { manager } from './state.js'
 import Binding from './Binding.js'
 import batch from './batch.js'
 
+const IS_OBSERVABLE = Symbol('IS_OBSERVABLE')
 export const GET_BINDING = Symbol('GET_BINDING')
+const UNWRAP = Symbol('UNWRAP')
 const observables = new WeakMap()
 
 function observable(source = {}) {
+  if (isObservable(source)) {
+    return source
+  }
   if (observables.has(source)) {
     return observables.get(source)
   }
@@ -15,6 +20,14 @@ function observable(source = {}) {
 
   const proxy = new Proxy(source, {
     get(target, property, receiver) {
+      if (property === UNWRAP) {
+        return source
+      }
+
+      if (property === IS_OBSERVABLE) {
+        return true
+      }
+
       if (property === GET_BINDING) {
         return getBinding
       }
@@ -76,3 +89,14 @@ function observable(source = {}) {
 }
 
 export default observable
+
+export function isObservable(object) {
+  return object && object[IS_OBSERVABLE]
+}
+
+export function unwrap(object) {
+  if (!isObservable(object)) {
+    return object
+  }
+  return object[UNWRAP]
+}

@@ -30,3 +30,19 @@ it('makes children observable', () => {
 
   expect(updated.size).toBe(1)
 })
+
+it('does not make multiple observables for one object', () => {
+  const real = {}
+  const obs1 = observable(real)
+  const obs2 = observable(real)
+
+  expect(obs1).toBe(obs2)
+})
+
+it('does not wrap observables in observables', () => {
+  const real = {}
+  const obs1 = observable(real)
+  const obs2 = observable(obs1)
+
+  expect(obs1).toBe(obs2)
+})
