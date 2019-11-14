@@ -1,10 +1,14 @@
 import { manager } from './state.js'
 import track from './track.js'
 
+let staticSkipRecursive = false
 const upToDate = 'upToDate'
 const dirty = 'dirty'
 
+const tracking = new WeakSet()
+
 function memoize(fn) {
+  const skipRecursive = staticSkipRecursive
   let status = dirty
   let removePrevious
   let value
@@ -12,7 +16,18 @@ function memoize(fn) {
   return () => {
     if (status === dirty) {
       const { accessed } = track(() => {
-        value = fn()
+        if (tracking.has(fn)) {
+          if (skipRecursive) {
+            return
+          }
+          throw Error('Use memoize.skipRecursive to skip recursive calls')
+        }
+        tracking.add(fn)
+        try {
+          value = fn()
+        } finally {
+          tracking.delete(fn)
+        }
       })
       const removers = new Set()
       for (const binding of accessed) {
@@ -32,7 +47,17 @@ function memoize(fn) {
       }
       status = upToDate
     }
+    if (skipRecursive) return
     return value
+  }
+}
+
+memoize.skipRecursive = fn => {
+  staticSkipRecursive = true
+  try {
+    return memoize(fn)
+  } finally {
+    staticSkipRecursive = false
   }
 }
 
