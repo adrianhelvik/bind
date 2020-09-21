@@ -16,7 +16,11 @@ function reaction(fn, whenTrue, whenFalse) {
     }))
 
     if (updated.size) {
-      throw Error('Encountered mutation in a reaction.')
+      for (const binding of updated) {
+        if (accessed.has(binding)) {
+          throw Error('Encountered mutation in a reaction.')
+        }
+      }
     }
 
     for (let binding of accessed) {

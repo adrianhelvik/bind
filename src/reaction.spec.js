@@ -69,3 +69,23 @@ test('update bug', () => {
 
   expect(result).toEqual(['reaction 1', 'reaction 2'])
 })
+
+it('does not error when updating unrelated state in a reaction', () => {
+  const state = observable({
+    a: true,
+  })
+
+  reaction(() => {
+    if (state.a) state.b = true
+  })
+
+  expect(state.b).toBe(true)
+})
+
+it('throws if a dependency is updated in a reaction', () => {
+  const state = observable({
+    count: 0,
+  })
+
+  expect(() => reaction(() => state.count++)).toThrow()
+})
