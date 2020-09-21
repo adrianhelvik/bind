@@ -18,7 +18,9 @@ function reaction(fn, whenTrue, whenFalse) {
     if (updated.size) {
       for (const binding of updated) {
         if (accessed.has(binding)) {
-          throw Error('Encountered mutation in a reaction.')
+          throw Error(
+            `The binding "${binding.name}" is both read and mutated in a reaction.`,
+          )
         }
       }
     }
