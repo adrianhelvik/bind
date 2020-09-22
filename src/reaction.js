@@ -15,16 +15,6 @@ function reaction(fn, whenTrue, whenFalse) {
       returnValue = fn()
     }))
 
-    if (updated.size) {
-      for (const binding of updated) {
-        if (accessed.has(binding)) {
-          throw Error(
-            `The binding "${binding.name}" is both read and mutated in a reaction.`,
-          )
-        }
-      }
-    }
-
     for (let binding of accessed) {
       const removeListener = binding.onUpdate(update)
       removers.push(removeListener)

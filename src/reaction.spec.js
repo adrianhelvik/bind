@@ -82,10 +82,31 @@ it('does not error when updating unrelated state in a reaction', () => {
   expect(state.b).toBe(true)
 })
 
-it('throws if a dependency is updated in a reaction', () => {
+xit('throws if a dependency is updated in a reaction', () => {
   const state = observable({
     count: 0,
   })
 
-  expect(() => reaction(() => state.count++)).toThrow()
+  expect(() => {
+    reaction(() => {
+      state.count += 1
+      console.log(`The count is: ${state.count}`)
+    })
+  }).not.toThrow()
+})
+
+it('does not throw if a reaction triggers a reaction', () => {
+  const state = observable({
+    message: '',
+    greetings: 0,
+  })
+
+  reaction(() => {
+    console.log(`Greetings delivered: ${state.greetings}`)
+  })
+
+  reaction(() => {
+    console.log(state.message)
+    state.greetings += 1
+  })
 })
